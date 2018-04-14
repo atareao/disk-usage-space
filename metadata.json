@@ -1,0 +1,10 @@
+{
+ "uuid": "power-commands@atareao.es",
+ "name": "Power commands",
+ "description": "Herramientas para gestionar Ubuntu",
+ "shell-version": ["3.26", "3.28"],
+ "url": "https://www.atareao.es",
+ "version": 1,
+ "gettext-domain": "power-commands@atareao.es",
+ "settings-schema": "es.atareao.power-commands"
+ }
