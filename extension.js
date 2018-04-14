@@ -31,6 +31,7 @@ const St = imports.gi.St;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Util = imports.misc.util;
+const SystemActions = imports.misc.systemActions;
 const Main = imports.ui.main;
 
 class PowerCommandsButton extends PanelMenu.Button{
@@ -44,11 +45,61 @@ class PowerCommandsButton extends PanelMenu.Button{
         box.add(icon);
         this.actor.add_child(box);
 
-        let item = new PopupMenu.PopupMenuItem('Salvapantallas');
-        item.connect('activate',  ()=>{
+        let systemActions = SystemActions.getDefault();
+
+        let item1 = new PopupMenu.PopupMenuItem('Salvapantallas');
+        item1.connect('activate', ()=>{
             Util.spawn(['gnome-screensaver-command', '--activate']);
         });
-        this.menu.addMenuItem(item);
+        this.menu.addMenuItem(item1);
+
+        if (systemActions.can_logout){
+            let item = new PopupMenu.PopupMenuItem('Cerrar sessión');
+            item.connect('activate', ()=>{
+                systemActions.activateLogout();
+            });
+            this.menu.addMenuItem(item);
+        }
+
+        if (systemActions.can_switch_user){
+            let item = new PopupMenu.PopupMenuItem('Cambiar de usuario');
+            item.connect('activate', ()=>{
+                systemActions.activateSwitchUser();
+            });
+            this.menu.addMenuItem(item);
+        }
+
+        if(systemActions.can_lock_screen){
+            let item = new PopupMenu.PopupMenuItem('Bloquear');
+            item.connect('activate', ()=>{
+                systemActions.activateLockScreen();
+            });
+            this.menu.addMenuItem(item);
+        }
+
+        if (systemActions.can_power_off){
+            let item = new PopupMenu.PopupMenuItem('Apagar');
+            item.connect('activate', ()=>{
+                systemActions.activatePowerOff();
+            });
+            this.menu.addMenuItem(item);
+        }
+
+        if (systemActions.can_suspend){
+            let item = new PopupMenu.PopupMenuItem('Suspender');
+            item.connect('activate', ()=>{
+                systemActions.activateSuspend();
+            });
+            this.menu.addMenuItem(item);
+        }
+
+        if(systemActions.can_lock_orientation){
+            let item = new PopupMenu.PopupMenuItem('Bloquear orientación');
+            item.connect('activate', ()=>{
+                systemActions.activateLockOrientation();
+            });
+            this.menu.addMenuItem(item);
+        }
     }
 }
 
