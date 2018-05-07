@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="power-commands@atareao.es">
+     <schema path="/es/atareao/power-commands/" id="es.atareao.power-commands">
+        <key name="show-screensaver" type="b">
+            <default>true</default>
+            <summary>Show the screensaver button</summary>
+            <description>Enable the screensaver button</description>
+        </key>
+        <key name="show-lock-screen" type="b">
+            <default>true</default>
+            <summary>Show the lock screen button</summary>
+            <description>Enable the lock screen button</description>
+        </key>
+        <key name="show-switch-user" type="b">
+            <default>true</default>
+            <summary>Show the switch user button</summary>
+            <description>Enable the switch user button</description>
+        </key>
+        <key name="show-close-session" type="b">
+            <default>true</default>
+            <summary>Show the close session button</summary>
+            <description>Enable the close session button</description>
+        </key>
+        <key name="show-shutdown" type="b">
+            <default>true</default>
+            <summary>Show the shutdown button</summary>
+            <description>Enable the shutdown button</description>
+        </key>
+        <key name="show-suspend" type="b">
+            <default>true</default>
+            <summary>Show the suspend button</summary>
+            <description>Enable the suspend button</description>
+        </key>
+    </schema>
+</schemalist>

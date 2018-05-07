@@ -1,0 +1,23 @@
+.button-box{
+    padding: 0px;
+    spacing: 18px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+.item{
+    border-radius: 32px;
+    border: 1px solid #2C3030;
+    width: 16px;
+    height: 16px;
+    padding: 14px;
+    margin: 6px;
+    color: #FFF;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.item:active {
+  background-color: #0274d9;
+}
+.item:hover {
+  background-color: #3085a9;
+}

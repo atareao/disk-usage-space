@@ -26,17 +26,24 @@
 
 imports.gi.versions.St = "1.0";
 
+const Gtk = imports.gi.Gtk;
 const St = imports.gi.St;
-
+    
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Util = imports.misc.util;
 const SystemActions = imports.misc.systemActions;
 const Main = imports.ui.main;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Extension = ExtensionUtils.getCurrentExtension();
+const Convenience = Extension.imports.convenience;
 
 class PowerCommandsButton extends PanelMenu.Button{
     constructor(){
         super(St.Align.START);
+        this._settings = Convenience.getSettings();
+        Gtk.IconTheme.get_default().append_search_path(
+            Extension.dir.get_child('icons').get_path());
 
         let box = new St.BoxLayout();
 
@@ -47,59 +54,147 @@ class PowerCommandsButton extends PanelMenu.Button{
 
         let systemActions = SystemActions.getDefault();
 
-        let item1 = new PopupMenu.PopupMenuItem('Salvapantallas');
-        item1.connect('activate', ()=>{
+        this.lineaButtons1 = new PopupMenu.PopupBaseMenuItem({
+            reactive: false
+        });
+        this.menu.addMenuItem(this.lineaButtons1)
+
+        var settings = Convenience.getSettings();
+
+        let screensaver_button = null;
+        let lock_screen_button = null;
+        let switch_user_button = null;
+        let logout_button = null;
+        let shutdown_button = null;
+        let suspend_button = null
+
+        screensaver_button = this._createActionButton('preferences-desktop-screensaver-symbolic', 'Salvapantallas');
+        screensaver_button.set_style_class_name('item');
+        screensaver_button.connect('clicked', ()=>{
             Util.spawn(['gnome-screensaver-command', '--activate']);
         });
-        this.menu.addMenuItem(item1);
+        this.lineaButtons1.actor.add_actor(screensaver_button);
 
-        if (systemActions.can_logout){
-            let item = new PopupMenu.PopupMenuItem('Cerrar sessión');
-            item.connect('activate', ()=>{
-                systemActions.activateLogout();
+        if(systemActions.can_lock_screen){
+            lock_screen_button = this._createActionButton('system-lock-screen-symbolic', 'Bloquear');
+            lock_screen_button.set_style_class_name('item');
+            lock_screen_button.connect('clicked', ()=>{
+                systemActions.activateLockScreen();
             });
-            this.menu.addMenuItem(item);
+            this.lineaButtons1.actor.add_actor(lock_screen_button);
         }
 
         if (systemActions.can_switch_user){
-            let item = new PopupMenu.PopupMenuItem('Cambiar de usuario');
-            item.connect('activate', ()=>{
+            switch_user_button = this._createActionButton('system-switch-user-symbolic', 'Cambiar de usuario');
+            switch_user_button.set_style_class_name('item');
+            switch_user_button.connect('clicked', ()=>{
                 systemActions.activateSwitchUser();
             });
-            this.menu.addMenuItem(item);
+            this.lineaButtons1.actor.add_actor(switch_user_button);
         }
 
-        if(systemActions.can_lock_screen){
-            let item = new PopupMenu.PopupMenuItem('Bloquear');
-            item.connect('activate', ()=>{
-                systemActions.activateLockScreen();
+        if (systemActions.can_logout){
+            logout_button = this._createActionButton('edit-delete-symbolic', 'Cerrar sessión');
+            logout_button.set_style_class_name('item');
+            logout_button.connect('clicked', ()=>{
+                systemActions.activateLogout();
             });
-            this.menu.addMenuItem(item);
+            this.lineaButtons1.actor.add_actor(logout_button);
         }
+
+
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+        this.lineaButtons2 = new PopupMenu.PopupBaseMenuItem({
+            reactive: false
+        });
+        this.menu.addMenuItem(this.lineaButtons2)
+
+        let items = new St.BoxLayout({
+            style_class: 'button-box'
+        });
+        this.lineaButtons2.actor.add_actor(items);
 
         if (systemActions.can_power_off){
-            let item = new PopupMenu.PopupMenuItem('Apagar');
-            item.connect('activate', ()=>{
+            shutdown_button = this._createActionButton('system-shutdown-symbolic', 'Apagar');
+            shutdown_button.set_style_class_name('item');
+            shutdown_button.connect('clicked', ()=>{
                 systemActions.activatePowerOff();
             });
-            this.menu.addMenuItem(item);
+            items.add_actor(shutdown_button);
         }
 
         if (systemActions.can_suspend){
-            let item = new PopupMenu.PopupMenuItem('Suspender');
-            item.connect('activate', ()=>{
+            suspend_button = this._createActionButton('night-light-symbolic', 'Suspender');
+            suspend_button.set_style_class_name('item');
+            suspend_button.connect('clicked', ()=>{
                 systemActions.activateSuspend();
             });
-            this.menu.addMenuItem(item);
+            //this.lineaButtons2.actor.add_actor(item);
+            items.add_actor(suspend_button);
         }
+        this._settingsC = this._settings.connect("changed", () => {
+            if(screensaver_button != null){
+                if(this._settings.get_boolean('show-screensaver')){
+                    screensaver_button.show();
+                }else{
+                    screensaver_button.hide();
+                }
+            }
+            if(lock_screen_button != null){
+                if(this._settings.get_boolean('show-lock-screen')){
+                    lock_screen_button.show();
+                }else{
+                    lock_screen_button.hide();
+                }
+            }
+            if(switch_user_button != null){
+                if(this._settings.get_boolean('show-switch-user')){
+                    switch_user_button.show();
+                }else{
+                    switch_user_button.hide();
+                }
+            }
+            if(logout_button != null){
+                if(this._settings.get_boolean('show-close-session')){
+                    logout_button.show();
+                }else{
+                    logout_button.hide();
+                }
+            }
+            if(shutdown_button != null){
+                if(this._settings.get_boolean('show-shutdown')){
+                    shutdown_button.show();
+                }else{
+                    shutdown_button.hide();
+                }
+            }
+            if(suspend_button != null){
+                if(this._settings.get_boolean('show-suspend')){
+                    suspend_button.show();
+                }else{
+                    suspend_button.hide();
+                }
+            }
+            /*
+            let screensaver_button = null;
+            let lock_screen_button = null;
+            let switch_user_button = null;
+            let logout_button = null;
+            let shutdown_button = null;
+            let suspend_button = null
+            */
+        });
 
-        if(systemActions.can_lock_orientation){
-            let item = new PopupMenu.PopupMenuItem('Bloquear orientación');
-            item.connect('activate', ()=>{
-                systemActions.activateLockOrientation();
-            });
-            this.menu.addMenuItem(item);
-        }
+    }
+    _createActionButton(iconName, accessibleName) {
+        let icon = new St.Button({ reactive: true,
+                                   can_focus: true,
+                                   track_hover: true,
+                                   accessible_name: accessibleName,
+                                   style_class: 'system-menu-action' });
+        icon.child = new St.Icon({ icon_name: iconName });
+        return icon;
     }
 }
 
