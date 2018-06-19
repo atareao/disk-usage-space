@@ -1,12 +1,12 @@
 /*
- * Power Commands
- * This a extension with some useful commands
- * with GNOME Shell
+ * Disk Space Usage
+ * This a extension to show disk space usage
+ * of mounted devices
  *
  * Copyright (C) 2018
  *     Lorenzo Carbonell <lorenzo.carbonell.cerezo@gmail.com>,
  *
- * This file is part of Power Commands.
+ * This file is part of Disk Space Usage.
  * 
  * WordReference Search Provider is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,21 +24,48 @@
  *
  */
 
+imports.gi.versions.Gdk = "3.0";
 imports.gi.versions.St = "1.0";
 
 const Gtk = imports.gi.Gtk;
+const Gdk = imports.gi.Gdk;
+const Clutter = imports.gi.Clutter;
 const St = imports.gi.St;
-    
+const GLib = imports.gi.GLib;
+const Pango = imports.gi.Pango;
+const PangoCairo = imports.gi.PangoCairo;
+const Cairo = imports.cairo
+
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Util = imports.misc.util;
-const SystemActions = imports.misc.systemActions;
 const Main = imports.ui.main;
+const MessageTray = imports.ui.messageTray;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
+const Manager = Extension.imports.dsu.Manager;
 
-class PowerCommandsButton extends PanelMenu.Button{
+function notify(msg, details, icon='disk-space-usage') {
+    let source = new MessageTray.Source(Extension.uuid, icon);
+    Main.messageTray.add(source);
+    let notification = new MessageTray.Notification(source, msg, details);
+    notification.setTransient(true);
+    source.notify(notification);
+}
+
+function getColor(keyName){
+    let color = new Gdk.RGBA();
+    color.parse(getValue(keyName));
+    return color;
+}
+
+function getValue(keyName){
+    return Convenience.getSettings().get_value(keyName).deep_unpack();
+}
+
+
+class DiskSpaceUsageButton extends PanelMenu.Button{
     constructor(){
         super(St.Align.START);
         this._settings = Convenience.getSettings();
@@ -47,167 +74,171 @@ class PowerCommandsButton extends PanelMenu.Button{
 
         let box = new St.BoxLayout();
 
-        let icon = new St.Icon({ icon_name: 'emblem-system',
+        let icon = new St.Icon({ icon_name: 'disk-space-usage',
                                  style_class: 'system-status-icon' });
         box.add(icon);
         this.actor.add_child(box);
 
-        let systemActions = SystemActions.getDefault();
+        this.manager = new Manager();
 
-        this.lineaButtons1 = new PopupMenu.PopupBaseMenuItem({
-            reactive: false
+        this.update();
+        this.sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
+                                                 60,
+                                                 this.update.bind(this));
+        this._settings.connect("changed", ()=>{
+            this.update();
         });
-        this.menu.addMenuItem(this.lineaButtons1)
+    }
 
-        var settings = Convenience.getSettings();
+    update(){
+        if(this.menu.numMenuItems > 0){
+            this.menu.removeAll();
 
-        let screensaver_button = null;
-        let lock_screen_button = null;
-        let switch_user_button = null;
-        let logout_button = null;
-        let shutdown_button = null;
-        let suspend_button = null
-
-        screensaver_button = this._createActionButton('preferences-desktop-screensaver-symbolic', 'Salvapantallas');
-        screensaver_button.set_style_class_name('item');
-        screensaver_button.connect('clicked', ()=>{
-            Util.spawn(['gnome-screensaver-command', '--activate']);
-        });
-        this.lineaButtons1.actor.add_actor(screensaver_button);
-
-        if(systemActions.can_lock_screen){
-            lock_screen_button = this._createActionButton('system-lock-screen-symbolic', 'Bloquear');
-            lock_screen_button.set_style_class_name('item');
-            lock_screen_button.connect('clicked', ()=>{
-                systemActions.activateLockScreen();
-            });
-            this.lineaButtons1.actor.add_actor(lock_screen_button);
         }
+        let columns = getValue('columns');
+        let section = new PopupMenu.PopupMenuSection();
+        this.manager.update();
+        let rows = Math.ceil(this.manager.devices.length/columns);
 
-        if (systemActions.can_switch_user){
-            switch_user_button = this._createActionButton('system-switch-user-symbolic', 'Cambiar de usuario');
-            switch_user_button.set_style_class_name('item');
-            switch_user_button.connect('clicked', ()=>{
-                systemActions.activateSwitchUser();
-            });
-            this.lineaButtons1.actor.add_actor(switch_user_button);
-        }
+        let menurows = [];
+        for (let i = 0; i < this.manager.devices.length; i++) {
 
-        if (systemActions.can_logout){
-            logout_button = this._createActionButton('edit-delete-symbolic', 'Cerrar sessión');
-            logout_button.set_style_class_name('item');
-            logout_button.connect('clicked', ()=>{
-                systemActions.activateLogout();
-            });
-            this.lineaButtons1.actor.add_actor(logout_button);
-        }
+            let currentrow = parseInt(i / columns);
+            let currentcolumn = i % columns;
 
 
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-        this.lineaButtons2 = new PopupMenu.PopupBaseMenuItem({
-            reactive: false
-        });
-        this.menu.addMenuItem(this.lineaButtons2)
-
-        let items = new St.BoxLayout({
-            style_class: 'button-box'
-        });
-        this.lineaButtons2.actor.add_actor(items);
-
-        if (systemActions.can_power_off){
-            shutdown_button = this._createActionButton('system-shutdown-symbolic', 'Apagar');
-            shutdown_button.set_style_class_name('item');
-            shutdown_button.connect('clicked', ()=>{
-                systemActions.activatePowerOff();
-            });
-            items.add_actor(shutdown_button);
-        }
-
-        if (systemActions.can_suspend){
-            suspend_button = this._createActionButton('night-light-symbolic', 'Suspender');
-            suspend_button.set_style_class_name('item');
-            suspend_button.connect('clicked', ()=>{
-                systemActions.activateSuspend();
-            });
-            //this.lineaButtons2.actor.add_actor(item);
-            items.add_actor(suspend_button);
-        }
-        this._settingsC = this._settings.connect("changed", () => {
-            if(screensaver_button != null){
-                if(this._settings.get_boolean('show-screensaver')){
-                    screensaver_button.show();
-                }else{
-                    screensaver_button.hide();
-                }
+            if(currentcolumn == 0){
+                menurows.push(new St.BoxLayout({ vertical: false }));
+                //if(i > 0){
+                section.actor.add_actor(menurows[currentrow]);
+                //}
             }
-            if(lock_screen_button != null){
-                if(this._settings.get_boolean('show-lock-screen')){
-                    lock_screen_button.show();
-                }else{
-                    lock_screen_button.hide();
-                }
-            }
-            if(switch_user_button != null){
-                if(this._settings.get_boolean('show-switch-user')){
-                    switch_user_button.show();
-                }else{
-                    switch_user_button.hide();
-                }
-            }
-            if(logout_button != null){
-                if(this._settings.get_boolean('show-close-session')){
-                    logout_button.show();
-                }else{
-                    logout_button.hide();
-                }
-            }
-            if(shutdown_button != null){
-                if(this._settings.get_boolean('show-shutdown')){
-                    shutdown_button.show();
-                }else{
-                    shutdown_button.hide();
-                }
-            }
-            if(suspend_button != null){
-                if(this._settings.get_boolean('show-suspend')){
-                    suspend_button.show();
-                }else{
-                    suspend_button.hide();
-                }
-            }
+            let percentage = parseInt(
+                this.manager.devices[i].percentage.substring(
+                    0, this.manager.devices[i].percentage.length-1));
             /*
-            let screensaver_button = null;
-            let lock_screen_button = null;
-            let switch_user_button = null;
-            let logout_button = null;
-            let shutdown_button = null;
-            let suspend_button = null
+            if(percentage > 80){
+                notify('Atención',
+                       'El dispositivo %s ha superado el %s %'.format(
+                            this.manager.devices[i].device, percentage));
+            }
             */
-        });
+            menurows[currentrow].add(
+                this.createCanvas(70, 70, this.manager.devices[i]));
+        }
+        this.menu.addMenuItem(section);
+        return true;
+    }
 
+    createCanvas(width, heigth, device){
+        let text = device.device.substring(5);
+        let percentage = parseInt(device.percentage.substring(
+            0, device.percentage.length-1));
+
+        let container = new St.BoxLayout({ vertical: true });
+
+        container.add(new St.Label({y_align: Clutter.ActorAlign.CENTER,
+                                    x_align: Clutter.ActorAlign.CENTER,
+                                    text: text }));
+        let canvas = new Clutter.Canvas();
+
+        canvas.set_size (width, heigth);
+        canvas.connect('draw', (canvas, cr, width, height) =>{
+            cr.save()
+            cr.setSourceRGBA(1, 1, 1, 1);
+            //cr.setSourceRGB(1, 1, 1);
+            cr.rectangle(0, 0, width, height);
+            cr.fill();
+            cr.setSourceRGBA(0.24, 0.24, 0.24, 1);
+            //cr.setSourceRGB(0.24, 0.24, 0.24);
+            cr.rectangle(0, 0, width, height);
+            cr.fill();
+            cr.restore();
+
+            cr.save();
+            let linew = width * 0.15;
+            cr.setLineWidth(linew);
+            cr.setSourceRGB(0.30, 0.30, 0.30);
+            cr.arc((width - linew) / 2,
+                   (height - linew) / 2,
+                   parseInt((width - linew) / 2 * 0.8),
+                   0.00001, 0);
+            cr.stroke();
+            cr.restore();
+
+            cr.save();
+            cr.setLineWidth(linew);
+            if(percentage < getValue('warning')){
+                let color = getColor('normal-color');
+                cr.setSourceRGB(color.red, color.green, color.blue);
+            }else if(percentage < getValue('danger')){
+                let color = getColor('warning-color');
+                cr.setSourceRGB(color.red, color.green, color.blue);
+            }else{
+                let color = getColor('danger-color');
+                cr.setSourceRGB(color.red, color.green, color.blue);
+            }
+
+            cr.arc((width - linew) / 2,
+                   (height - linew) / 2,
+                   parseInt((width - linew) / 2 * 0.8),
+                   Math.PI * 2* (1 - percentage / 100), 0);
+            cr.stroke();
+            cr.restore();
+
+            cr.save();
+
+            cr.setSourceRGB(0.85, 0.85, 0.85);
+            this.write_centered_text(cr,
+                                     width/2,
+                                     height/2,
+                                     percentage + "%",
+                                     'Ubuntu',
+                                     width/7)
+            cr.restore();
+
+        });
+        canvas.invalidate();
+
+        let dummy = new Clutter.Actor();
+        dummy.set_content(canvas);
+        dummy.set_size(width, heigth);
+
+        container.add(dummy);
+        return container;
     }
-    _createActionButton(iconName, accessibleName) {
-        let icon = new St.Button({ reactive: true,
-                                   can_focus: true,
-                                   track_hover: true,
-                                   accessible_name: accessibleName,
-                                   style_class: 'system-menu-action' });
-        icon.child = new St.Icon({ icon_name: iconName });
-        return icon;
+
+    write_centered_text(cr, x, y, text, font, size){
+        let pg_layout = PangoCairo.create_layout(cr);
+        let pg_context = pg_layout.get_context();
+        pg_layout.set_font_description(
+            Pango.FontDescription.from_string('%s %s'.format(font, size)));
+        pg_layout.set_text(text, -1);
+
+        PangoCairo.update_layout(cr, pg_layout);
+        let text_size = pg_layout.get_pixel_size();
+
+        cr.moveTo(x - text_size[0]/2, y - size/2);
+        cr.setFontSize(size);
+        cr.showText(text);
     }
+
 }
 
-let powerCommandsButton;
+let diskSpaceUsageButton;
 
 function init(){
 }
 
 function enable(){
-    powerCommandsButton = new PowerCommandsButton();
-    Main.panel.addToStatusArea('PowerCommandsButton', powerCommandsButton, 0, 'right');
+    diskSpaceUsageButton = new DiskSpaceUsageButton();
+    Main.panel.addToStatusArea('DiskSpaceUsageButton',
+                               diskSpaceUsageButton,
+                               0,
+                               'right');
 }
 
 function disable() {
-    powerCommandsButton.destroy();
+    GLib.source_remove(this.sourceId);
+    diskSpaceUsageButton.destroy();
 }

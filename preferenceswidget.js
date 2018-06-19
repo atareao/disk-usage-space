@@ -1,3 +1,31 @@
+/*
+ * Disk Space Usage
+ * This a extension to show disk space usage
+ * of mounted devices
+ *
+ * Copyright (C) 2018
+ *     Lorenzo Carbonell <lorenzo.carbonell.cerezo@gmail.com>,
+ *
+ * This file is part of Disk Space Usage.
+ * 
+ * WordReference Search Provider is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * WordReference Search Provider is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with gnome-shell-extension-openweather.
+ * If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+ 
+ const Lang = imports.lang;
+
 imports.gi.versions.Gdk = "3.0";
 imports.gi.versions.Gio = "2.0";
 imports.gi.versions.GLib = "2.0";
@@ -16,6 +44,52 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Meta = ExtensionUtils.getCurrentExtension();
 const Gettext = imports.gettext.domain(Meta.uuid);
 const _ = Gettext.gettext;
+
+class ColorSetting extends Gtk.Button{
+    constructor(settings, keyName, params={}) {
+        super({
+            can_focus: true,
+            width_request: 132,
+            height_request: 32,
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            margin_right: 12,
+            visible: true
+        });
+        let string_color = settings.get_value(keyName).deep_unpack();
+        this.background_color = new Gdk.RGBA();
+        this.background_color.parse(string_color);
+
+        this.drawingArea = new Gtk.DrawingArea();
+        this.drawingArea.connect('draw', (widget, cr)=>{
+            log('DDDD'+this.background_color.green);
+            cr.setSourceRGBA(this.background_color.red,
+                             this.background_color.green,
+                             this.background_color.blue,
+                             this.background_color.alpha);
+            cr.rectangle(0,
+                         0,
+                         this.get_allocated_width(),
+                         this.get_allocated_height());
+            cr.fill();
+        });
+        this.add(this.drawingArea);
+
+        this.connect('clicked', ()=>{
+            let color_dialog = new Gtk.ColorChooserDialog();
+            color_dialog.set_rgba(this.background_color);
+            if(color_dialog.run() == Gtk.ResponseType.OK){
+                this.background_color = color_dialog.get_rgba();
+                settings.set_value(
+                    keyName,
+                    new GLib.Variant("s", this.background_color.to_string())
+                );
+                this.drawingArea.queue_draw();
+            }
+            color_dialog.destroy();
+        });
+    }
+}
 
 /** A Gtk.Switch subclass for boolean GSettings. */
 class BoolSetting extends Gtk.Switch{
@@ -59,6 +133,8 @@ class EnumSetting extends Gtk.ComboBoxText{
         );
     }
 }
+
+
 
 /** A Gtk.MenuButton subclass for GSetting flags */
 class FlagsSetting extends Gtk.MenuButton{
@@ -459,50 +535,35 @@ class Setting extends Row{
         this.grid.attach(this.widget, 1, 0, 1, (description) ? 2 : 1);
     }
 }
-/*
-function onListBoxUpdateHeaderFunc(row, before){
-    if (before) {
-        row.set_header(
-            new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL })
-        );
-    }
-}
-*/
-class Section extends Gtk.Frame{
+
+class SectionNO extends Gtk.Frame{
 
     constructor(params={}) {
-        /*
         params = Object.assign({
             width_request: 460,
             selection_mode: Gtk.SelectionMode.NONE,
             margin_bottom: 32
         }, params);
-        */
+
         super({
             can_focus: false,
-            margin_bottom: 32,//params.margin_bottom,
+            margin_bottom: params.margin_bottom,
             hexpand: true,
             shadow_type: Gtk.ShadowType.IN
         });
-        /*
-        params = Object.assign({
-            width_request: 460,
-            selection_mode: Gtk.SelectionMode.NONE,
-            margin_bottom: 32},
-            params);
-        */
+
         this.list = new Gtk.ListBox({
             can_focus: false,
             hexpand: true,
             activate_on_single_click: true,
-            selection_mode: Gtk.SelectionMode.NONE,
-            width_request: 460
+            selection_mode: params.selection_mode,
+            width_request: params.width_request
         });
         this.add(this.list);
 
-        //this.list.set_header_func(onListBoxUpdateHeaderFunc);
+        this.list.set_header_func(this._header_func);
     }
-    /*
+
     _header_func(row, before) {
         if (before) {
             row.set_header(
@@ -510,7 +571,7 @@ class Section extends Gtk.Frame{
             );
         }
     }
-    */
+
     /**
      * Add and return new row with a Gtk.Grid child
      *
@@ -581,16 +642,129 @@ class Section extends Gtk.Frame{
     }
 }
 
-class Page extends Gtk.ScrolledWindow{
 
-    constructor(params={}) {
+var Section = new Lang.Class({
+    Name: "PreferencesWidgetSection",
+    Extends: Gtk.Frame,
+
+    _init: function (params={}) {
+        params = Object.assign({
+            width_request: 460,
+            selection_mode: Gtk.SelectionMode.NONE,
+            margin_bottom: 32
+        }, params);
+
+        this.parent({
+            can_focus: false,
+            margin_bottom: params.margin_bottom,
+            hexpand: true,
+            shadow_type: Gtk.ShadowType.IN
+        });
+
+        this.list = new Gtk.ListBox({
+            can_focus: false,
+            hexpand: true,
+            activate_on_single_click: true,
+            selection_mode: params.selection_mode,
+            width_request: params.width_request
+        });
+        this.add(this.list);
+
+        this.list.set_header_func(this._header_func);
+    },
+
+    _header_func: function (row, before) {
+        if (before) {
+            row.set_header(
+                new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL })
+            );
+        }
+    },
+
+    /**
+     * Add and return new row with a Gtk.Grid child
+     *
+     * @param {Gtk.ListBoxRow|Row} [row] - The row to add, null to create new
+     * @return {Gtk.ListBoxRow} row - The new row
+     */
+    addRow: function (row, params={}) {
+        if (!row) { row = new Row(params);}
+        this.list.add(row);
+        return row;
+    },
+
+    /**
+     * Add a new row to @section and return the row. @summary will be placed on
+     * top of @description (dimmed) on the left, @widget to the right of them.
+     *
+     * @param {String} summary - A short summary for the item
+     * @param {String} description - A short description for the item
+     * @return {Gtk.ListBoxRow} row - The new row
+     */
+    addSetting: function (summary, description, widget) {
+        let setting = new Setting(summary, description, widget);
+        let row = this.addRow(setting);
+        return row;
+    },
+
+    /**
+     * Add a new row to @section, populated from the Schema for @settings and
+     * the key @keyName. A Gtk.Widget will be chosen for @keyName based on it's
+     * type, unless @widget is given which will have @settings and @keyName
+     * passed to its constructor.
+     *
+     * @param {String} keyName - The GSettings key name
+     * @param {Gtk.Widget} widget - An override widget
+     * @return {Gtk.ListBoxRow} row - The new row
+     */
+    addGSetting: function (settings, keyName, widget) {
+        let key = settings.settings_schema.get_key(keyName);
+        let range = key.get_range().deep_unpack()[0];
+        let type = key.get_value_type().dup_string();
+        type = (range !== "type") ? range : type;
+
+        if (widget !== undefined) {
+            widget = new widget(settings, keyName);
+        } else if (type === "b") {
+            widget = new BoolSetting(settings, keyName);
+        } else if (type === "enum") {
+            widget = new EnumSetting(settings, keyName);
+        } else if (type === "flags") {
+            widget = new FlagsSetting(settings, keyName);
+        } else if (type === "mb") {
+            widget = new MaybeSetting(settings, keyName);
+        } else if (type.length === 1 && "ynqiuxthd".indexOf(type) > -1) {
+            widget = new NumberSetting(settings, keyName, type);
+        } else if (type === "range") {
+            widget = new RangeSetting(settings, keyName);
+        } else if (type.length === 1 && "sog".indexOf(type) > -1) {
+            widget = new StringSetting(settings, keyName);
+        } else {
+            widget = new OtherSetting(settings, keyName);
+        }
+
+        return this.addSetting(
+            key.get_summary(),
+            key.get_description(),
+            widget
+        );
+    }
+});
+
+
+/** A composite widget resembling A Gnome Control Center panel. */
+var Page = new Lang.Class({
+    Name: "PreferencesWidgetPage",
+    Extends: Gtk.ScrolledWindow,
+
+    _init: function (params={}) {
         params = Object.assign({
             can_focus: true,
             hscrollbar_policy: Gtk.PolicyType.NEVER,
             valign: Gtk.Align.FILL,
             vexpand: true,
         }, params);
-        super(params);
+        this.parent(params);
 
         this.box = new Gtk.Box({
             can_focus: false,
@@ -601,9 +775,17 @@ class Page extends Gtk.ScrolledWindow{
             orientation: Gtk.Orientation.VERTICAL
         });
         this.add(this.box);
-    }
+    },
 
-    addSection(title, section, params={}) {
+    /**
+     * Add and return a new section widget. If @title is given, a bold title
+     * will be placed above the section.
+     *
+     * @param {string|Gtk.Widget} [title] - Optional title for the section
+     * @param {Section} [section] - The section to add, or null to create new
+     * @return {Gtk.Frame} section - The new Section object.
+     */
+    addSection: function (title, section, params={}) {
         if (typeof title === "string") {
             let label = new Gtk.Label({
                 can_focus: false,
@@ -622,34 +804,37 @@ class Page extends Gtk.ScrolledWindow{
         this.box.add(section);
         return section;
     }
-}
+});
+
 
 /** A GtkStack subclass with a pre-attached GtkStackSwitcher */
-class Stack extends Gtk.Stack{
+var Stack = new Lang.Class({
+    Name: "PreferencesWidgetStack",
+    Extends: Gtk.Stack,
 
-    constructor(params={}) {
+    _init: function (params={}) {
         params = Object.assign({
             transition_type: Gtk.StackTransitionType.SLIDE_LEFT_RIGHT
         }, params);
 
-        super(params);
+        this.parent(params);
 
         this.switcher = new Gtk.StackSwitcher({
             halign: Gtk.Align.CENTER,
             stack: this
         });
         this.switcher.show_all();
-    }
+    },
 
-    addPage(id, title, params={}) {
+    addPage: function (id, title, params={}) {
         let page = new Page(params);
         this.add_titled(page, id, title);
         return page;
-    }
+    },
 
-    removePage(id) {
+    removePage: function (id) {
         let page = this.get_child_by_name(id);
         this.remove(page);
         page.destroy();
     }
-}
+});

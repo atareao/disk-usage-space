@@ -1,10 +1,13 @@
 {
- "uuid": "power-commands@atareao.es",
- "name": "Power commands",
- "description": "Herramientas para gestionar Ubuntu",
- "shell-version": ["3.26", "3.28"],
- "url": "https://www.atareao.es",
- "version": 1,
- "gettext-domain": "power-commands@atareao.es",
- "settings-schema": "es.atareao.power-commands"
+    "description": "Show disk space usage for all device mounted in your machine",
+    "name": "Disk space usage",
+    "shell-version": [
+        "3.26",
+        "3.28"
+    ],
+    "url": "https://www.atareao.es",
+    "uuid": "disk-space-usage@atareao.es",
+    "gettext-domain": "disk-space-usage@atareao.es",
+    "settings-schema": "es.atareao.disk-space-usage",
+    "version": 1
  }

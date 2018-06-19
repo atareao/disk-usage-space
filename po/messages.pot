@@ -1,0 +1,148 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-06-19 21:26+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:6
+msgid "Columns"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:7
+msgid "Number of partitions for row"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:11
+msgid "Normal color"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:12
+msgid "Normal color for pie"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:16
+msgid "Warning"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:17
+msgid "Show warning color when space over this value"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:21
+msgid "Warning color"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:22
+msgid "Warning color for pie"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:26
+msgid "Danger"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:27
+msgid "Show danger color when space over this value"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:31
+msgid "Danger color"
+msgstr ""
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:32
+msgid "Danger color for pie"
+msgstr ""
+
+#: preferenceswidget.js:217
+msgid "Nothing"
+msgstr ""
+
+#: preferenceswidget.js:230
+msgid "True"
+msgstr ""
+
+#: preferenceswidget.js:243
+msgid "False"
+msgstr ""
+
+#: prefs.js:61
+msgid "Disk Space Usage"
+msgstr ""
+
+#: prefs.js:66
+msgid "Version: "
+msgstr ""
+
+#: prefs.js:77
+msgid "Atareao"
+msgstr ""
+
+#: prefs.js:84
+msgid "Copyright © 2018 Lorenzo Carbonell"
+msgstr ""
+
+#: prefs.js:91
+msgid "This program is free software: you can redistribute it and/or modify"
+msgstr ""
+
+#: prefs.js:92
+msgid "it under the terms of the GNU General Public License as published by"
+msgstr ""
+
+#: prefs.js:93
+msgid "the Free Software Foundation, either version 3 of the License, or"
+msgstr ""
+
+#: prefs.js:94
+msgid "(at your option) any later version."
+msgstr ""
+
+#: prefs.js:95
+msgid "This program is distributed in the hope that it will be useful,"
+msgstr ""
+
+#: prefs.js:96
+msgid "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+msgstr ""
+
+#: prefs.js:97
+msgid "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
+msgstr ""
+
+#: prefs.js:98
+msgid "GNU General Public License for more details."
+msgstr ""
+
+#: prefs.js:99
+msgid "You should have received a copy of the GNU General Public License"
+msgstr ""
+
+#: prefs.js:100
+msgid ""
+"along with this program.  If not, see <a href=\"https://www.gnu.org/licenses/"
+"\">https://www.gnu.org/licenses/</a>."
+msgstr ""
+
+#: prefs.js:117
+msgid "Preferences"
+msgstr ""
+
+#: prefs.js:121
+msgid "Select options"
+msgstr ""
+
+#: prefs.js:138
+msgid "About"
+msgstr ""
