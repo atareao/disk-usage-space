@@ -35,7 +35,7 @@ class Manager{
 
     update(){
         this._devices = [];
-        let dfstring = GLib.spawn_command_line_sync('df')[1].toString();
+        let dfstring = GLib.spawn_command_line_sync('df -x squashfs -x tmpfs')[1].toString();
         let regex = /^\/dev(.*)$/gim
         let m;
         dfstring.match(regex).forEach((match) => {
