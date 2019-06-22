@@ -1,5 +1,5 @@
 Format: http://dep.debian.net/deps/dep5
-Upstream-Name: gnome-shell-extension-chromeapps
+Upstream-Name: gnome-shell-extension-disk-usage-space
 Source: http://www.atareao.es
 
 Files: *
