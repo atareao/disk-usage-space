@@ -1,0 +1,13 @@
+Source: gnome-shell-extension-world-cup-indicator-gs
+Section: gnome
+Priority: optional
+Maintainer: Lorenzo Carbonell Cerezo <lorenzo.carbonell.cerezo@gmail.com>
+Build-Depends: debhelper (>= 11)
+Standards-Version: 4.2.1
+Homepage: http://www.atareao.es
+
+Package: gnome-shell-extension-world-cup-indicator-gs
+Architecture: all
+Depends: ${misc:Depends}, gnome-shell (>= 3.28)
+Description: The World Cup in your Ubuntu Desktop
+ FIFA Women World Cup in your Ubuntu Desktop
