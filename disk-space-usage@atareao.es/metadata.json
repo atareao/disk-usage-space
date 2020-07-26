@@ -2,8 +2,7 @@
     "description": "Show disk space usage for all device mounted in your machine",
     "name": "Disk space usage",
     "shell-version": [
-        "3.26",
-        "3.28"
+        "3.36"
     ],
     "url": "https://www.atareao.es",
     "uuid": "disk-space-usage@atareao.es",
