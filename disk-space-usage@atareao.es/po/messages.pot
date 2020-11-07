@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-19 21:26+0200\n"
+"POT-Creation-Date: 2020-11-07 11:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,15 +65,63 @@ msgstr ""
 msgid "Danger color for pie"
 msgstr ""
 
-#: preferenceswidget.js:217
+#: extension.js:86 prefs.js:135
+msgid "About"
+msgstr ""
+
+#: extension.js:227
+msgid "Help"
+msgstr ""
+
+#: extension.js:229
+msgid "Project Page"
+msgstr ""
+
+#: extension.js:231
+msgid "Get help online..."
+msgstr ""
+
+#: extension.js:233
+msgid "Report a bug..."
+msgstr ""
+
+#: extension.js:237
+msgid "El atareao"
+msgstr ""
+
+#: extension.js:239
+msgid "GitHub"
+msgstr ""
+
+#: extension.js:241
+msgid "Twitter"
+msgstr ""
+
+#: extension.js:243
+msgid "Telegram"
+msgstr ""
+
+#: extension.js:245
+msgid "Mastodon"
+msgstr ""
+
+#: extension.js:247
+msgid "Spotify"
+msgstr ""
+
+#: extension.js:249
+msgid "YouTube"
+msgstr ""
+
+#: preferenceswidget.js:231
 msgid "Nothing"
 msgstr ""
 
-#: preferenceswidget.js:230
+#: preferenceswidget.js:244
 msgid "True"
 msgstr ""
 
-#: preferenceswidget.js:243
+#: preferenceswidget.js:257
 msgid "False"
 msgstr ""
 
@@ -94,55 +142,45 @@ msgid "Copyright © 2018 Lorenzo Carbonell"
 msgstr ""
 
 #: prefs.js:91
-msgid "This program is free software: you can redistribute it and/or modify"
+msgid ""
+"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
+"OR\n"
 msgstr ""
 
 #: prefs.js:92
-msgid "it under the terms of the GNU General Public License as published by"
+msgid ""
+"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
 msgstr ""
 
 #: prefs.js:93
-msgid "the Free Software Foundation, either version 3 of the License, or"
+msgid ""
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
 msgstr ""
 
 #: prefs.js:94
-msgid "(at your option) any later version."
+msgid ""
+"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
 msgstr ""
 
 #: prefs.js:95
-msgid "This program is distributed in the hope that it will be useful,"
+msgid ""
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING\n"
 msgstr ""
 
 #: prefs.js:96
-msgid "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+msgid ""
+"FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER "
+"DEALINGS\n"
 msgstr ""
 
 #: prefs.js:97
-msgid "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
+msgid "IN THE SOFTWARE.\n"
 msgstr ""
 
-#: prefs.js:98
-msgid "GNU General Public License for more details."
-msgstr ""
-
-#: prefs.js:99
-msgid "You should have received a copy of the GNU General Public License"
-msgstr ""
-
-#: prefs.js:100
-msgid ""
-"along with this program.  If not, see <a href=\"https://www.gnu.org/licenses/"
-"\">https://www.gnu.org/licenses/</a>."
-msgstr ""
-
-#: prefs.js:117
+#: prefs.js:116
 msgid "Preferences"
 msgstr ""
 
-#: prefs.js:121
+#: prefs.js:120
 msgid "Select options"
-msgstr ""
-
-#: prefs.js:138
-msgid "About"
 msgstr ""

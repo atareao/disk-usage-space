@@ -44,7 +44,7 @@ const MessageTray = imports.ui.messageTray;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
-const Manager = Extension.imports.dsu.Manager;
+const BoxDevice = Extension.imports.piechart.BoxDevice;
 
 function notify(msg, details, icon='disk-space-usage') {
     let source = new MessageTray.Source(Extension.uuid, icon);
@@ -54,21 +54,13 @@ function notify(msg, details, icon='disk-space-usage') {
     source.notify(notification);
 }
 
-function getColor(keyName){
-    let color = new Gdk.RGBA();
-    color.parse(getValue(keyName));
-    return color;
-}
-
-function getValue(keyName){
-    return Convenience.getSettings().get_value(keyName).deep_unpack();
-}
-
 let DiskSpaceUsageButton = GObject.registerClass (
     class DiskSpaceUsageButton extends PanelMenu.Button{
         _init(){
             super._init(St.Align.START);
+            this._devices = {};
             this._settings = Convenience.getSettings();
+            this._loadConfig();
             Gtk.IconTheme.get_default().append_search_path(
                 Extension.dir.get_child('icons').get_path());
 
@@ -77,10 +69,17 @@ let DiskSpaceUsageButton = GObject.registerClass (
             let icon = new St.Icon({ gicon: gicon,
                                      style_class: 'system-status-icon' });
             box.add(icon);
-            this.actor.add_child(box);
+            this.add_actor(box);
             
-            this.disk_usage_section = new PopupMenu.PopupMenuSection();
+            this.disk_usage_section = new PopupMenu.PopupBaseMenuItem({
+                reactive: false
+            });
             this.menu.addMenuItem(this.disk_usage_section);
+            this._rows = new St.BoxLayout({
+                vertical: true,
+                style_class: 'message battery-box'
+            });
+            this.disk_usage_section.actor.add_actor(this._rows);
 
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
@@ -89,157 +88,130 @@ let DiskSpaceUsageButton = GObject.registerClass (
                 ExtensionUtils.openPrefs();
             });
             this.menu.addMenuItem(settingsMenuItem);
-
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
             this.menu.addMenuItem(this._get_help());
 
-            this.manager = new Manager();
-    
             this.update();
-            this.sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
+            this._sourceId = 0;
+            this._settingsChanged();
+            this._settings.connect('changed',
+                                   this._settingsChanged.bind(this));
+        }
+
+        _loadConfig(){
+            this._columns = this._settings.get_value('columns').deep_unpack();
+            this._warning = this._settings.get_value('warning').deep_unpack();
+            this._danger = this._settings.get_value('danger').deep_unpack();
+            this._normalColor = this._settings.get_value('normal-color').deep_unpack();
+            this._warningColor = this._settings.get_value('warning-color').deep_unpack();
+            this._dangerColor = this._settings.get_value('danger-color').deep_unpack();
+        }
+
+        _settingsChanged(){
+            this._loadConfig();
+            this.update();
+            if(this._sourceId > 0){
+                GLib.source_remove(this._sourceId);
+            }
+            this._sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                      60,
                                                      this.update.bind(this));
-            this._settings.connect("changed", ()=>{
-                this.update();
+        }
+
+        recalculate(devices){
+            let keys = Object.keys(devices);
+            let removedDevice = false;
+            Object.keys(this._devices).forEach((item)=>{
+                if(!keys.includes(item)){
+                    removedDevice = true;
+                }
+            });
+            let updateColumns = false;
+            this._rows.get_children().forEach((row)=>{
+                if(row.get_children().length != this._columns){
+                    updateColumns = true;
+                }
+            });
+            if((keys.length != Object.keys(this._devices).length) ||
+                    removedDevice || updateColumns){
+                this._rows.get_children().forEach((item) => {
+                    this._rows.remove_child(item);
+                    this._devices = {};
+                });
+            }
+            keys.forEach((name)=>{
+                let percentage = devices[name];
+                if(Object.keys(this._devices).length > 0 &&
+                        name in this._devices){
+                    this._devices[name].setPercentage(percentage);
+                    this._devices[name].redraw();
+                }else{
+                    this._devices[name] = new BoxDevice(name, 70,
+                        70, percentage, this._warning, this._danger,
+                        this._normalColor, this._warningColor,
+                        this._dangerColor);
+                    this._devices[name].redraw();
+                    if(this._rows.get_children().length > 0){
+                        let item = -1;
+                        this._rows.get_children().forEach((row, index)=>{
+                            if(row.get_children().length < this._columns){
+                                row.add_actor(this._devices[name]);
+                                item = index;
+                            }
+                        });
+                        if(item == -1){
+                            let row = new St.BoxLayout({
+                                vertical: false
+                            });
+                            row.add_actor(this._devices[name]);
+                            this._rows.add_actor(row);
+                        }
+                    }else{
+                        let row = new St.BoxLayout({
+                            vertical: false
+                        });
+                        row.add_actor(this._devices[name]);
+                        this._rows.add_actor(row);
+                    }
+                }
             });
         }
-    
         update(){
-
-            this.disk_usage_section.actor.hide();
-            if(this.disk_usage_section.numMenuItems > 0){
-                this.disk_usage_section.removeAll();
-    
-            }
-            let columns = getValue('columns');
-            this.manager.update();
-            let rows = Math.ceil(this.manager.devices.length/columns);
-    
-            let menurows = [];
-            for (let i = 0; i < this.manager.devices.length; i++) {
-
-                let item = new PopupMenu.PopupBaseMenuItem({
-                   can_focus: false,
-                   reactive: false
+            try{
+                let command = ['df', '-x', 'squashfs', '-x', 'tmpfs'];
+                let proc = Gio.Subprocess.new(
+                    command,
+                    Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
+                );
+                proc.communicate_utf8_async(null, null, (proc, res) => {
+                    try{
+                        let devices = {};
+                        let [, stdout, stderr] = proc.communicate_utf8_finish(res);
+                        let regex = /\/dev\/.*$/gm;
+                        stdout = stdout.toString();
+                        stdout.match(regex).forEach((match) => {
+                            let regex2 = /[^\s]+/gi
+                            let params = match.match(regex2);
+                            let name = params[0].substring(5);
+                            let percentage = params[4].substring(
+                                0,
+                                params[4].length - 1);
+                            devices[name] = percentage;
+                        });
+                        this.recalculate(devices);
+                    }catch(e){
+                        logError(e);
+                    }
                 });
-                let currentrow = parseInt(i / columns);
-                let currentcolumn = i % columns;
-                if(currentcolumn == 0){
-                    menurows.push(new St.BoxLayout({ vertical: false }));
-                    //if(i > 0){
-                    item.actor.add_actor(menurows[currentrow]);
-                    this.disk_usage_section.addMenuItem(item);
-                    //}
-                }
-                let percentage = parseInt(
-                    this.manager.devices[i].percentage.substring(
-                        0, this.manager.devices[i].percentage.length-1));
-                /*
-                if(percentage > 80){
-                    notify('Atención',
-                           'El dispositivo %s ha superado el %s %'.format(
-                                this.manager.devices[i].device, percentage));
-                }
-                */
-                menurows[currentrow].add(
-                    this.createCanvas(70, 70, this.manager.devices[i]));
+            }catch(e){
+                logError(e);
             }
-            this.disk_usage_section.actor.show();
             return true;
         }
-    
-        createCanvas(width, heigth, device){
-            let text = device.device.substring(5);
-            let percentage = parseInt(device.percentage.substring(
-                0, device.percentage.length-1));
-    
-            let container = new St.BoxLayout({ vertical: true });
-    
-            container.add(new St.Label({y_align: Clutter.ActorAlign.CENTER,
-                                        x_align: Clutter.ActorAlign.CENTER,
-                                        text: text }));
-            let canvas = new Clutter.Canvas();
-    
-            canvas.set_size (width, heigth);
-            canvas.connect('draw', (canvas, cr, width, height) =>{
-                cr.save()
-                cr.setSourceRGBA(1, 1, 1, 0);
-                //cr.setSourceRGB(1, 1, 1);
-                cr.rectangle(0, 0, width, height);
-                cr.fill();
-                cr.setSourceRGBA(0.24, 0.24, 0.24, 0);
-                //cr.setSourceRGB(0.24, 0.24, 0.24);
-                cr.rectangle(0, 0, width, height);
-                cr.fill();
-                cr.restore();
-    
-                cr.save();
-                let linew = width * 0.15;
-                cr.setLineWidth(linew);
-                cr.setSourceRGB(0.30, 0.30, 0.30);
-                cr.arc((width) / 2,
-                       (height) / 2,
-                       parseInt((width - linew) / 2 * 0.8),
-                       0.00001, 0);
-                cr.stroke();
-                cr.restore();
-    
-                cr.save();
-                cr.setLineWidth(linew);
-                if(percentage < getValue('warning')){
-                    let color = getColor('normal-color');
-                    cr.setSourceRGB(color.red, color.green, color.blue);
-                }else if(percentage < getValue('danger')){
-                    let color = getColor('warning-color');
-                    cr.setSourceRGB(color.red, color.green, color.blue);
-                }else{
-                    let color = getColor('danger-color');
-                    cr.setSourceRGB(color.red, color.green, color.blue);
-                }
-    
-                cr.arc((width) / 2,
-                       (height) / 2,
-                       parseInt((width - linew) / 2 * 0.8),
-                       Math.PI * 2* (1 - percentage / 100), 0);
-                cr.stroke();
-                cr.restore();
-    
-                cr.save();
-    
-                cr.setSourceRGB(0.85, 0.85, 0.85);
-                this.write_centered_text(cr,
-                                         (width + linew)/2,
-                                         (height + linew)/2,
-                                         percentage + "%",
-                                         'Ubuntu',
-                                         width/7)
-                cr.restore();
-    
-            });
-            canvas.invalidate();
-    
-            let dummy = new Clutter.Actor();
-            dummy.set_content(canvas);
-            dummy.set_size(width, heigth);
-    
-            container.add(dummy);
-            return container;
-        }
-    
-        write_centered_text(cr, x, y, text, font, size){
-            let pg_layout = PangoCairo.create_layout(cr);
-            let pg_context = pg_layout.get_context();
-            pg_layout.set_font_description(
-                Pango.FontDescription.from_string('%s %s'.format(font, size)));
-            pg_layout.set_text(text, -1);
-    
-            PangoCairo.update_layout(cr, pg_layout);
-            let text_size = pg_layout.get_pixel_size();
-    
-            cr.moveTo(x - text_size[0]/2, y - size/2);
-            cr.setFontSize(size);
-            cr.showText(text);
+
+        disableUpdate(){
+            if(this._sourceId > 0){
+                GLib.source_remove(this._sourceId);
+            }
         }
 
         _create_help_menu_item(text, icon_name, url){
@@ -254,20 +226,27 @@ let DiskSpaceUsageButton = GObject.registerClass (
        _get_help(){
             let menu_help = new PopupMenu.PopupSubMenuMenuItem(_('Help'));
             menu_help.menu.addMenuItem(this._create_help_menu_item(
-                _('Project Page'), 'github', 'https://github.com/atareao/world-cup-indicator-gs'));
+                _('Project Page'), 'github', 'https://github.com/atareao/disk-usage-space'));
             menu_help.menu.addMenuItem(this._create_help_menu_item(
-                _('Get help online...'), 'help-online', 'https://www.atareao.es/aplicacion/el-mundial-en-ubuntu/'));
+                _('Get help online...'), 'help-online', 'https://www.atareao.es/aplicacion/disk-space-usage'));
             menu_help.menu.addMenuItem(this._create_help_menu_item(
-                _('Report a bug...'), 'bug', 'https://github.com/atareao/world-cup-indicator-gs/issues'));
+                _('Report a bug...'), 'bug', 'https://github.com/atareao/disk-usage-space/issues'));
             menu_help.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
             menu_help.menu.addMenuItem(this._create_help_menu_item(
-                _('El atareao'), 'web', 'https://www.atareao.es'));
+                _('El atareao'), 'atareao', 'https://www.atareao.es'));
             menu_help.menu.addMenuItem(this._create_help_menu_item(
-                _('Follow me in Twitter'), 'twitter', 'https://twitter.com/atareao'));
+                _('GitHub'), 'github', 'https://github.com/atareao'));
             menu_help.menu.addMenuItem(this._create_help_menu_item(
-                _('Follow me in Facebook'), 'facebook', 'http://www.facebook.com/elatareao'));
+                _('Twitter'), 'twitter', 'https://twitter.com/atareao'));
             menu_help.menu.addMenuItem(this._create_help_menu_item(
-                _('Follow me in Google+'), 'google', 'https://plus.google.com/ 118214486317320563625/posts'));
+                _('Telegram'), 'telegram', 'https://t.me/canal_atareao'));
+            menu_help.menu.addMenuItem(this._create_help_menu_item(
+                _('Mastodon'), 'mastodon', 'https://mastodon.social/@atareao'));
+            menu_help.menu.addMenuItem(this._create_help_menu_item(
+                _('Spotify'), 'spotify', 'https://open.spotify.com/show/2v0fC8PyeeUTQDD67I0mKW'));
+            menu_help.menu.addMenuItem(this._create_help_menu_item(
+                _('YouTube'), 'youtube', 'http://youtube.com/c/atareao'));
             return menu_help;
         }
     }
@@ -276,6 +255,7 @@ let DiskSpaceUsageButton = GObject.registerClass (
 let diskSpaceUsageButton;
 
 function init(){
+    Convenience.initTranslations();
 }
 
 function enable(){
@@ -287,6 +267,6 @@ function enable(){
 }
 
 function disable() {
-    GLib.source_remove(this.sourceId);
+    diskSpaceUsageButton.disableUpdate();
     diskSpaceUsageButton.destroy();
 }

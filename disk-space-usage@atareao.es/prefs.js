@@ -26,6 +26,7 @@ const GLib = imports.gi.GLib;
 const GObject = imports.gi.GObject;
 const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
+const Gdk = imports.gi.Gdk;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
@@ -87,14 +88,6 @@ var AboutWidget = GObject.registerClass(
 
             let aboutLicense = new Gtk.Label({
                 label: "<small>" +
-                _("Permission is hereby granted, free of charge, to any person obtaining a copy\n") + 
-                _("of this software and associated documentation files (the \"Software\"), to\n") + 
-                _("deal in the Software without restriction, including without limitation the\n") + 
-                _("rights to use, copy, modify, merge, publish, distribute, sublicense, and/or\n") + 
-                _("sell copies of the Software, and to permit persons to whom the Software is\n") + 
-                _("furnished to do so, subject to the following conditions:\n\n") +
-                _("The above copyright notice and this permission notice shall be included in\n") + 
-                _("all copies or substantial portions of the Software.\n\n") + 
                 _("THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n") + 
                 _("IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n") + 
                 _("FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n") + 
@@ -148,15 +141,27 @@ var DiskSpaceUsagePreferencesWidget = GObject.registerClass(
 }
 );
 
+function center(window){
+    let defaultDisplay = Gdk.Display.get_default();
+    let monitor = defaultDisplay.get_primary_monitor();
+    let scale = monitor.get_scale_factor();
+    let monitor_width = monitor.get_geometry().width / scale;
+    let monitor_height = monitor.get_geometry().height / scale;
+    let width = window.get_preferred_width()[0];
+    let height = window.get_preferred_height()[0];
+    window.move((monitor_width - width)/2, (monitor_height - height)/2);
+}
+
 function buildPrefsWidget() {
-    log('disk-space-usage: init');
     let preferencesWidget = new DiskSpaceUsagePreferencesWidget();
     GLib.timeout_add(GLib.PRIORITY_DEFAULT, 0, () => {
         let prefsWindow = preferencesWidget.get_toplevel()
         prefsWindow.get_titlebar().custom_title = preferencesWidget.switcher;
-        prefsWindow.connect("destroy", () => {
-            preferencesWidget.daemon.discovering = false;
-        });
+        let width = prefsWindow.get_preferred_width()[0];
+        prefsWindow.resize(width, 650);
+        center(prefsWindow);
+        let icon = Extension.path + '/icons/battery-status-icon.svg';
+        prefsWindow.set_icon_from_file(icon);
         return false;
     });
 

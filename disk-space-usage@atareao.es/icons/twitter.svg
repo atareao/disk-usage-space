@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,75 +7,58 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   version="1.1"
-   id="Capa_1"
-   x="0px"
-   y="0px"
-   viewBox="0 0 24 24"
-   xml:space="preserve"
-   inkscape:version="0.91 r13725"
+   inkscape:version="1.0 (1.0+r73+1)"
+   inkscape:export-ydpi="96"
+   inkscape:export-xdpi="96"
+   inkscape:export-filename="/home/lorenzo/Escritorio/iconos-web/engranaje.png"
    sodipodi:docname="twitter.svg"
-   width="24"
-   height="24"><metadata
-     id="metadata43"><rdf:RDF><cc:Work
-         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
-     id="defs41" /><sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1051"
-     id="namedview39"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 6.3499999 6.3500002"
+   height="24"
+   width="24">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     inkscape:document-rotation="0"
+     inkscape:window-maximized="0"
+     inkscape:window-y="30"
+     inkscape:window-x="232"
+     inkscape:window-height="773"
+     inkscape:window-width="1576"
+     units="px"
      showgrid="false"
-     inkscape:zoom="19.22168"
-     inkscape:cx="10.422333"
-     inkscape:cy="15.009094"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="Capa_1" /><g
-     id="g3"
-     style="fill:#5da8dc;fill-opacity:1"
-     transform="matrix(0.03267979,0,0,0.03267979,1.9999679,1.9999679)"><g
-       id="g5"
-       style="fill:#5da8dc;fill-opacity:1"><path
-         style="fill:#5da8dc;fill-opacity:1"
-         d="m 612,116.258 c -22.525,9.981 -46.694,16.75 -72.088,19.772 25.929,-15.527 45.777,-40.155 55.184,-69.411 -24.322,14.379 -51.169,24.82 -79.775,30.48 -22.907,-24.437 -55.49,-39.658 -91.63,-39.658 -69.334,0 -125.551,56.217 -125.551,125.513 0,9.828 1.109,19.427 3.251,28.606 -104.326,-5.24 -196.835,-55.223 -258.75,-131.174 -10.823,18.51 -16.98,40.078 -16.98,63.101 0,43.559 22.181,81.993 55.835,104.479 C 60.921,247.278 41.57,241.618 24.629,232.21 l 0,1.568 c 0,60.806 43.291,111.554 100.693,123.104 -10.517,2.83 -21.607,4.398 -33.08,4.398 -8.107,0 -15.947,-0.803 -23.634,-2.333 15.985,49.907 62.336,86.199 117.253,87.194 -42.947,33.654 -97.099,53.655 -155.916,53.655 -10.134,0 -20.116,-0.612 -29.944,-1.721 55.567,35.681 121.536,56.485 192.438,56.485 230.948,0 357.188,-191.291 357.188,-357.188 l -0.421,-16.253 C 573.872,163.526 595.211,141.422 612,116.258 Z"
-         id="path7"
-         inkscape:connector-curvature="0" /></g></g><g
-     id="g9"
-     transform="translate(0,-588)" /><g
-     id="g11"
-     transform="translate(0,-588)" /><g
-     id="g13"
-     transform="translate(0,-588)" /><g
-     id="g15"
-     transform="translate(0,-588)" /><g
-     id="g17"
-     transform="translate(0,-588)" /><g
-     id="g19"
-     transform="translate(0,-588)" /><g
-     id="g21"
-     transform="translate(0,-588)" /><g
-     id="g23"
-     transform="translate(0,-588)" /><g
-     id="g25"
-     transform="translate(0,-588)" /><g
-     id="g27"
-     transform="translate(0,-588)" /><g
-     id="g29"
-     transform="translate(0,-588)" /><g
-     id="g31"
-     transform="translate(0,-588)" /><g
-     id="g33"
-     transform="translate(0,-588)" /><g
-     id="g35"
-     transform="translate(0,-588)" /><g
-     id="g37"
-     transform="translate(0,-588)" /></svg>
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="20.713281"
+     inkscape:cx="28.368924"
+     inkscape:zoom="8"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-290.64998)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Capa 1">
+    <path
+       d="m 6.0854144,292.0226 c -0.2142184,0.0923 -0.4469039,0.15882 -0.6869763,0.18467 0.2474592,-0.14773 0.4358237,-0.38042 0.5244658,-0.65742 -0.2289921,0.13665 -0.4875315,0.23637 -0.7571513,0.28808 -0.2179118,-0.23268 -0.5281591,-0.37673 -0.8716472,-0.37673 -0.6611223,0 -1.1929749,0.53555 -1.1929749,1.19298 0,0.0923 0.01108,0.18467 0.029547,0.27331 -0.9898367,-0.0517 -1.8725643,-0.52446 -2.45981815,-1.24837 -0.10341578,0.17728 -0.16251052,0.38042 -0.16251052,0.60202 0,0.41367 0.21052499,0.77931 0.53185257,0.99353 -0.19575128,-0.007 -0.38042232,-0.0628 -0.53923941,-0.15143 0,0.004 0,0.0111 0,0.0148 0,0.57986 0.4099697,1.06001 0.95659601,1.17081 -0.099722,0.0258 -0.2068316,0.0406 -0.3139408,0.0406 -0.077562,0 -0.15143025,-0.007 -0.22529867,-0.0185 0.15143027,0.47276 0.59094727,0.81625 1.11541307,0.82733 -0.4099697,0.32132 -0.9233552,0.50969 -1.48106172,0.50969 -0.0997224,0 -0.19205787,-0.004 -0.28808681,-0.0148 0.52815916,0.33979 1.15604063,0.53554 1.83193663,0.53554 2.1938919,0 3.3942537,-1.81716 3.3942537,-3.39425 0,-0.0517 0,-0.10342 -0.00369,-0.15513 0.2326856,-0.16989 0.4358237,-0.38042 0.5983342,-0.6168 z"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.61861px;line-height:1.25;font-family:FontAwesome;-inkscape-font-specification:FontAwesome;letter-spacing:0px;word-spacing:0px;fill:#1da1f2;fill-opacity:1;stroke:none;stroke-width:0.0620495"
+       id="path6793" />
+  </g>
+</svg>

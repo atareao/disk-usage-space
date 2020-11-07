@@ -8,5 +8,5 @@
     "uuid": "disk-space-usage@atareao.es",
     "gettext-domain": "disk-space-usage@atareao.es",
     "settings-schema": "es.atareao.disk-space-usage",
-    "version": 3
+    "version": 4
  }
