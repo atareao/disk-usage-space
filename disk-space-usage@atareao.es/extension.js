@@ -119,6 +119,7 @@ let DiskSpaceUsageButton = GObject.registerClass (
 
         recalculate(devices){
             let keys = Object.keys(devices);
+            keys.sort();
             let removedDevice = false;
             Object.keys(this._devices).forEach((item)=>{
                 if(!keys.includes(item)){
