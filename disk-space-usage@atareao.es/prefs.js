@@ -130,6 +130,8 @@ var DiskSpaceUsagePreferencesWidget = GObject.registerClass(
             appearanceSection.addGSetting(settings,
                                       "danger-color",
                                       PreferencesWidget.ColorSetting);
+            appearanceSection.addGSetting(settings,
+                                          "show-indicator");
         let aboutPage = this.addPage(
             "about",
             _("About"),

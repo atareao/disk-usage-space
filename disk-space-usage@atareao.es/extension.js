@@ -33,7 +33,6 @@ const St = imports.gi.St;
 const GLib = imports.gi.GLib;
 const Pango = imports.gi.Pango;
 const PangoCairo = imports.gi.PangoCairo;
-const Cairo = imports.cairo
 const GObject = imports.gi.GObject;
 
 const PanelMenu = imports.ui.panelMenu;
@@ -70,7 +69,18 @@ let DiskSpaceUsageButton = GObject.registerClass (
                                      style_class: 'system-status-icon' });
             box.add(icon);
             this.add_actor(box);
-            
+
+            // Add the indicator
+            if (this._show_indicator) {
+                this._indicator = new DiskSpaceIndicator(
+                    this._warning, this._danger, this._normalColor,
+                    this._warningColor, this._dangerColor);
+            }
+            else {
+                this._indicator = null;
+            }
+
+
             this.disk_usage_section = new PopupMenu.PopupBaseMenuItem({
                 reactive: false
             });
@@ -104,17 +114,35 @@ let DiskSpaceUsageButton = GObject.registerClass (
             this._normalColor = this._settings.get_value('normal-color').deep_unpack();
             this._warningColor = this._settings.get_value('warning-color').deep_unpack();
             this._dangerColor = this._settings.get_value('danger-color').deep_unpack();
+            this._show_indicator = this._settings.get_value('show-indicator').deep_unpack();
         }
 
         _settingsChanged(){
             this._loadConfig();
+
+            // Deal with the indicator
+            if (this._indicator != null) {
+                this._indicator.updateColors(
+                    this._warning, this._danger, this._normalColor,
+                    this._warningColor, this._dangerColor);
+            }
+
+            if (this._show_indicator && this._indicator == null) {
+                this._indicator = new DiskSpaceIndicator(
+                    this._warning, this._danger, this._normalColor,
+                    this._warningColor, this._dangerColor);
+            }
+            else if (!this._show_indicator && this._indicator != null) {
+                this._indicator.destroy();
+                this._indicator = null;
+            }
+
             this.update();
             if(this._sourceId > 0){
                 GLib.source_remove(this._sourceId);
             }
-            this._sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
-                                                     60,
-                                                     this.update.bind(this));
+            this._sourceId = GLib.timeout_add_seconds(
+                GLib.PRIORITY_DEFAULT, 60, this.update.bind(this));
         }
 
         recalculate(devices){
@@ -137,6 +165,7 @@ let DiskSpaceUsageButton = GObject.registerClass (
                 this._rows.get_children().forEach((item) => {
                     this._rows.remove_child(item);
                     this._devices = {};
+                    this._indicators = {};
                 });
             }
             keys.forEach((name)=>{
@@ -175,6 +204,8 @@ let DiskSpaceUsageButton = GObject.registerClass (
                     }
                 }
             });
+            // Now do the same for the indicator
+            this._indicator.refresh(devices);
         }
         update(){
             try{
@@ -252,6 +283,89 @@ let DiskSpaceUsageButton = GObject.registerClass (
         }
     }
 );
+
+function rgbToHex(rgb) {
+    var a = rgb.split("(")[1].split(")")[0];
+    a = a.split(",");
+
+    var b = a.map(function(x){             //For each array element
+        x = parseInt(x).toString(16);      //Convert to a base16 string
+        return (x.length==1) ? "0"+x : x;  //Add zero if we get only one character
+    });
+    return "#"+b.join("");
+}
+
+function isHex(str) {
+    return /^#[0-9A-F]{6}$/i.test(str);
+}
+
+let DiskSpaceIndicator = GObject.registerClass (
+    class DiskSpaceIndicator extends PanelMenu.Button {
+
+        _init(warning, danger, normalColor, warningColor, dangerColor) {
+            super._init(0.0, `Indicator`, false);
+            this._percentage = {};
+
+            this.updateColors(warning, danger, normalColor, warningColor, dangerColor);
+
+            this._text = new St.Label({
+                text: "0%",
+                y_align: Clutter.ActorAlign.CENTER,
+                style: "color:" + normalColor,
+            });
+
+            this.add_actor(this._text);
+
+            // Add to the status bar
+            Main.panel.addToStatusArea(
+                'DiskSpaceIndicator', this, 0, 'right');
+
+        }
+
+        updateColors(warning, danger, normalColor, warningColor, dangerColor) {
+            this.warning = warning;
+            this.danger = danger;
+
+            if (!isHex(normalColor)) {
+                normalColor = rgbToHex(normalColor);
+            }
+            this.normalColor = normalColor;
+
+            if (!isHex(warningColor)) {
+                warningColor = rgbToHex(warningColor);
+            }
+            this.warningColor = warningColor;
+
+            if (!isHex(dangerColor)) {
+                dangerColor = rgbToHex(dangerColor);
+            }
+            this.dangerColor = dangerColor;
+
+        }
+
+        refresh(devices) {
+            let keys = Object.keys(devices);
+            keys.sort();
+
+            let text = "";
+            keys.forEach((name)=>{
+                let percentage = devices[name];
+                let color = this.normalColor;
+                if (percentage > this.warning) {
+                    color = this.warningColor;
+                }
+                if (percentage > this.danger) {
+                    color = this.dangerColor;
+                }
+                text += "<span fgcolor=\"" + color + "\">";
+                text += percentage.toString() + "% </span>";
+            });
+            let clut = this._text.get_clutter_text();
+            clut.set_markup(text);
+        }
+
+    }
+)
 
 let diskSpaceUsageButton;
 
