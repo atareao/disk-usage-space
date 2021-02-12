@@ -31,5 +31,10 @@
           <summary>Danger color</summary>
           <description>Danger color for pie</description>
         </key>
+        <key type="b" name="show-indicator">
+          <default>true</default>
+          <summary>Show the indicator</summary>
+          <description>Show the indicator in the status bar</description>
+        </key>
     </schema>
 </schemalist>
