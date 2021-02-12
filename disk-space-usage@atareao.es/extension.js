@@ -119,14 +119,14 @@ let DiskSpaceUsageButton = GObject.registerClass (
 
         _settingsChanged(){
             this._loadConfig();
-            this.update();
-            if(this._sourceId > 0){
-                GLib.source_remove(this._sourceId);
-            }
-            this._sourceId = GLib.timeout_add_seconds(
-                GLib.PRIORITY_DEFAULT, 60, this.update.bind(this));
 
             // Deal with the indicator
+            if (this._indicator != null) {
+                this._indicator.updateColors(
+                    this._warning, this._danger, this._normalColor,
+                    this._warningColor, this._dangerColor);
+            }
+
             if (this._show_indicator && this._indicator == null) {
                 this._indicator = new DiskSpaceIndicator(
                     this._warning, this._danger, this._normalColor,
@@ -136,6 +136,13 @@ let DiskSpaceUsageButton = GObject.registerClass (
                 this._indicator.destroy();
                 this._indicator = null;
             }
+
+            this.update();
+            if(this._sourceId > 0){
+                GLib.source_remove(this._sourceId);
+            }
+            this._sourceId = GLib.timeout_add_seconds(
+                GLib.PRIORITY_DEFAULT, 60, this.update.bind(this));
         }
 
         recalculate(devices){
@@ -277,6 +284,21 @@ let DiskSpaceUsageButton = GObject.registerClass (
     }
 );
 
+function rgbToHex(rgb) {
+    var a = rgb.split("(")[1].split(")")[0];
+    a = a.split(",");
+
+    var b = a.map(function(x){             //For each array element
+        x = parseInt(x).toString(16);      //Convert to a base16 string
+        return (x.length==1) ? "0"+x : x;  //Add zero if we get only one character
+    });
+    return "#"+b.join("");
+}
+
+function isHex(str) {
+    return /^#[0-9A-F]{6}$/i.test(str);
+}
+
 let DiskSpaceIndicator = GObject.registerClass (
     class DiskSpaceIndicator extends PanelMenu.Button {
 
@@ -284,11 +306,7 @@ let DiskSpaceIndicator = GObject.registerClass (
             super._init(0.0, `Indicator`, false);
             this._percentage = {};
 
-            this.warning = warning;
-            this.danger = danger;
-            this.normalColor = normalColor;
-            this.warningColor = warningColor;
-            this.dangerColor = dangerColor;
+            this.updateColors(warning, danger, normalColor, warningColor, dangerColor);
 
             this._text = new St.Label({
                 text: "0%",
@@ -301,6 +319,27 @@ let DiskSpaceIndicator = GObject.registerClass (
             // Add to the status bar
             Main.panel.addToStatusArea(
                 'DiskSpaceIndicator', this, 0, 'right');
+
+        }
+
+        updateColors(warning, danger, normalColor, warningColor, dangerColor) {
+            this.warning = warning;
+            this.danger = danger;
+
+            if (!isHex(normalColor)) {
+                normalColor = rgbToHex(normalColor);
+            }
+            this.normalColor = normalColor;
+
+            if (!isHex(warningColor)) {
+                warningColor = rgbToHex(warningColor);
+            }
+            this.warningColor = warningColor;
+
+            if (!isHex(dangerColor)) {
+                dangerColor = rgbToHex(dangerColor);
+            }
+            this.dangerColor = dangerColor;
 
         }
 
