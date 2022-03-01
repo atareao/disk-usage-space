@@ -1,0 +1,197 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-07 11:09+0100\n"
+"PO-Revision-Date: 2022-03-01 18:00+0100\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
+"Language-Team: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:6
+msgid "Columns"
+msgstr "Kolommen"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:7
+msgid "Number of partitions for row"
+msgstr "Aantal partities per rij"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:11
+msgid "Normal color"
+msgstr "Normale kleur"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:12
+msgid "Normal color for pie"
+msgstr "De normale kleur binnen het cirkeldiagram"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:16
+msgid "Warning"
+msgstr "Waarschuwing"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:17
+msgid "Show warning color when space over this value"
+msgstr "Toon een waarschuwingskleur als deze waarde wordt overschreden"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:21
+msgid "Warning color"
+msgstr "Waarschuwingskleur"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:22
+msgid "Warning color for pie"
+msgstr "De waarschuwingskleur binnen het cirkeldiagram"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:26
+msgid "Danger"
+msgstr "Gevaar"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:27
+msgid "Show danger color when space over this value"
+msgstr "Toon een gevarenkleur als deze waarde wordt overschreden"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:31
+msgid "Danger color"
+msgstr "Gevarenkleur"
+
+#: schemas/es.atareao.disk-space-usage.gschema.xml:32
+msgid "Danger color for pie"
+msgstr "De gevarenkleur binnen het cirkeldiagram"
+
+#: extension.js:86 prefs.js:135
+msgid "About"
+msgstr "Over"
+
+#: extension.js:227
+msgid "Help"
+msgstr "Hulp"
+
+#: extension.js:229
+msgid "Project Page"
+msgstr "Website"
+
+#: extension.js:231
+msgid "Get help online..."
+msgstr "Hulppagina openen…"
+
+#: extension.js:233
+msgid "Report a bug..."
+msgstr "Probleem melden…"
+
+#: extension.js:237
+msgid "El atareao"
+msgstr "El atareao"
+
+#: extension.js:239
+msgid "GitHub"
+msgstr "GitHub"
+
+#: extension.js:241
+msgid "Twitter"
+msgstr "Twitter"
+
+#: extension.js:243
+msgid "Telegram"
+msgstr "Telegram"
+
+#: extension.js:245
+msgid "Mastodon"
+msgstr "Mastodon"
+
+#: extension.js:247
+msgid "Spotify"
+msgstr "Spotify"
+
+#: extension.js:249
+msgid "YouTube"
+msgstr "YouTube"
+
+#: preferenceswidget.js:231
+msgid "Nothing"
+msgstr "Niets"
+
+#: preferenceswidget.js:244
+msgid "True"
+msgstr "Waar"
+
+#: preferenceswidget.js:257
+msgid "False"
+msgstr "Niet waar"
+
+#: prefs.js:61
+msgid "Disk Space Usage"
+msgstr "Schijfgebruik"
+
+#: prefs.js:66
+msgid "Version: "
+msgstr "Versie: "
+
+#: prefs.js:77
+msgid "Atareao"
+msgstr "Atareao"
+
+#: prefs.js:84
+msgid "Copyright © 2018 Lorenzo Carbonell"
+msgstr "Auteursrecht © 2018 Lorenzo Carbonell"
+
+#: prefs.js:91
+msgid ""
+"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
+"OR\n"
+msgstr ""
+"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
+"OR\n"
+
+#: prefs.js:92
+msgid ""
+"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+msgstr ""
+"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+
+#: prefs.js:93
+msgid ""
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL "
+"THE\n"
+msgstr ""
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL "
+"THE\n"
+
+#: prefs.js:94
+msgid ""
+"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+msgstr ""
+"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+
+#: prefs.js:95
+msgid ""
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING\n"
+msgstr ""
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING\n"
+
+#: prefs.js:96
+msgid ""
+"FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER "
+"DEALINGS\n"
+msgstr ""
+"FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER "
+"DEALINGS\n"
+
+#: prefs.js:97
+msgid "IN THE SOFTWARE.\n"
+msgstr "IN THE SOFTWARE.\n"
+
+#: prefs.js:116
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+#: prefs.js:120
+msgid "Select options"
+msgstr "Geef uw voorkeuren aan"
